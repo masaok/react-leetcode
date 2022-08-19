@@ -65,6 +65,22 @@ const useStyles = makeStyles(
     td: {
       border: `1px solid black`,
     },
+
+    // Plain
+    plainKeyValuePair: {
+      display: 'flex',
+      // border: `1px solid black`,
+    },
+
+    plainKey: {
+      padding: theme.spacing(2),
+      border: `1px solid black`,
+    },
+
+    plainValue: {
+      padding: theme.spacing(2),
+      border: `1px solid black`,
+    },
   }),
   { name: 'TwoSumTwoPassHashTable' }
 )
@@ -151,12 +167,11 @@ const TwoSumTwoPassHashTable = props => {
     }
 
     if (state.i === state.nums.length && state.j < state.nums.length) {
-      setHistory([...history, { ...state }])
       console.log('SECOND LOOP: ' + JSON.stringify(state, null, 2))
 
       const newComplement = state.target - state.nums[state.j]
 
-      let solution = []
+      let solution = [...state.solution]
       if (isSolutionReady(newComplement) && state.solution.length === 0) {
         console.log(`SOLUTION READY! ...`)
         solution = [state.j, state.hash[newComplement]]
@@ -170,6 +185,7 @@ const TwoSumTwoPassHashTable = props => {
         complement: newComplement,
       }
 
+      setHistory([...history, { ...state, complement: newComplement, solution: [...solution] }])
       dispatch({ type: ACTIONS.SET_STATE, payload: { ...payload } })
     }
   }, [state, history])
@@ -229,7 +245,7 @@ const TwoSumTwoPassHashTable = props => {
         <div>
           {history.map((hash, index) => {
             const keys = Object.keys(hash)
-            console.log(`HISTORY RENDER KEYS: `, keys)
+            // console.log(`HISTORY RENDER KEYS: `, keys)
             // return <div>{keys}</div>
             return (
               <table className={classes.historyItem}>
@@ -237,11 +253,18 @@ const TwoSumTwoPassHashTable = props => {
                   <td className={classes.historyIteration}>{index}</td>
                   <td className={classes.historyItemValue}>
                     {keys.map((key, keyIndex) => {
-                      console.log(`HISTORY RENDER KEY: `, key)
-                      console.log(`HISTORY RENDER TYPEOF HASH KEY: `, typeof hash[key])
+                      // console.log(`HISTORY RENDER KEY: `, key)
+                      // console.log(`HISTORY RENDER TYPEOF HASH KEY: `, typeof hash[key])
                       if (typeof hash[key] === 'object') {
                         return renderObject(key, hash[key], index)
                         // return <div>{key}</div>
+                      } else if (['i', 'j', 'complement'].includes(key)) {
+                        return (
+                          <div className={classes.plainKeyValuePair}>
+                            <div className={classes.plainKey}>{key}</div>
+                            <div className={classes.plainValue}>{hash[key]}</div>
+                          </div>
+                        )
                       } else {
                         return <></>
                       }
